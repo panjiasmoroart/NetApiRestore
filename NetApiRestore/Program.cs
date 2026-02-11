@@ -25,4 +25,7 @@ var app = builder.Build();
 
 app.MapControllers();
 
+// seed the database
+DbInitializer.InitDb(app);
+
 app.Run();
