@@ -3,7 +3,7 @@ using NetApiRestore.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-var mysqlServerVersion = new MySqlServerVersion(new Version(8, 0, 44));
+var mysqlServerVersion = new MySqlServerVersion(new Version(8, 0, 44)); // Fixed
 
 // Add services to the container.
 builder.Services.AddControllers();

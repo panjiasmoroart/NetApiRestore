@@ -11,15 +11,15 @@ namespace NetApiRestore.Controllers
     public class ProductsController(StoreContext context) : ControllerBase
     {
         [HttpGet]
-		public async Task<ActionResult<List<Product>>> GetProducts()
+		public ActionResult<List<Product>> GetProducts()
 		{
-			return await context.Products.AsNoTracking().ToListAsync();
+			return context.Products.ToList();
 		}
 
-        [HttpGet("{id}")]
-		public async Task<ActionResult<Product>> GetProduct(int id)
+		[HttpGet("{id}")]
+		public ActionResult<Product> GetProduct(int id)
 		{
-			var product = await context.Products.FindAsync(id);
+			var product =  context.Products.Find(id);
 
 			if (product == null) return NotFound();
 
