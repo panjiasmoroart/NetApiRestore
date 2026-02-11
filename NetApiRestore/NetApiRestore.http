@@ -1,0 +1,6 @@
+@NetApiRestore_HostAddress = http://localhost:5205
+
+GET {{NetApiRestore_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
