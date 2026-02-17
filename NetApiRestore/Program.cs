@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using NetApiRestore.Data;
+using NetApiRestore.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -12,11 +13,13 @@ builder.Services.AddDbContext<StoreContext>(opt =>
 	opt.UseMySql(connectionString, mysqlServerVersion);
 });
 builder.Services.AddCors();
-
+builder.Services.AddTransient<ExceptionMiddleware>();
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
+app.UseMiddleware<ExceptionMiddleware>();
+
 app.UseCors(opt =>
 {
 	opt.AllowAnyHeader().AllowAnyMethod().WithOrigins("https://localhost:3000");
