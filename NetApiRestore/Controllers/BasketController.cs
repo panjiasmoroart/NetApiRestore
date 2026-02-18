@@ -10,10 +10,12 @@ namespace NetApiRestore.Controllers
 		[HttpGet]
 		public async Task<ActionResult<Basket>> GetBasket()
 		{
-			var basket = await context.Baskets
-				.Include(x => x.Items)
-				.ThenInclude(x => x.Product)
-				.FirstOrDefaultAsync(x => x.BasketId == Request.Cookies["basketId"]);
+			//var basket = await context.Baskets
+			//	.Include(x => x.Items)
+			//	.ThenInclude(x => x.Product)
+			//	.FirstOrDefaultAsync(x => x.BasketId == Request.Cookies["basketId"]);
+
+			var basket = await RetrieveBasket();
 
 			if (basket == null) return NoContent();
 
@@ -24,14 +26,52 @@ namespace NetApiRestore.Controllers
 		public async Task<ActionResult> AddItemToBasket(int productId, int quantity)
 		{
 			// get bakset 
-			// create basket   
-			// get product 
-			// add item to basket 
-			// save changes
+			var basket = await RetrieveBasket();
 
-			return StatusCode(201);
+			// create basket
+			basket ??= CreateBasket();
+
+			// get product 
+			var product = await context.Products.FindAsync(productId);
+			if (product == null) return BadRequest("Problem adding item to basket");
+
+			// add item to basket 
+			basket.AddItem(product, quantity);
+
+			// save changes
+			var result = await context.SaveChangesAsync() > 0;
+
+			if (result) return CreatedAtAction(nameof(GetBasket), basket);
+
+			return BadRequest("Problem updating basket");
 		}
 
 		[HttpDelete]
+		public async Task<ActionResult> RemoveBasketItem(int productId, int quantity)
+		{
+			return BadRequest("Problem updating basket");
+		}
+
+		private Basket CreateBasket()
+		{
+			var basketId = Guid.NewGuid().ToString();
+			var cookieOptions = new CookieOptions
+			{
+				IsEssential = true,
+				Expires = DateTime.UtcNow.AddDays(30)
+			};
+			Response.Cookies.Append("basketId", basketId, cookieOptions);
+			var basket = new Basket { BasketId = basketId };
+			context.Baskets.Add(basket);
+			return basket;
+		}
+
+		private async Task<Basket?> RetrieveBasket()
+		{
+			return await context.Baskets
+			   .Include(x => x.Items)
+			   .ThenInclude(x => x.Product)
+			   .FirstOrDefaultAsync(x => x.BasketId == Request.Cookies["basketId"]);
+		}
 	}
 }
