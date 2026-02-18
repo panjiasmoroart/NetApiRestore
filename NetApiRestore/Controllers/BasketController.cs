@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetApiRestore.Data;
+using NetApiRestore.DTOs;
 using NetApiRestore.Entities;
 
 namespace NetApiRestore.Controllers
@@ -8,7 +9,7 @@ namespace NetApiRestore.Controllers
 	public class BasketController(StoreContext context) : BaseApiController
 	{
 		[HttpGet]
-		public async Task<ActionResult<Basket>> GetBasket()
+		public async Task<ActionResult<BasketDto>> GetBasket()
 		{
 			//var basket = await context.Baskets
 			//	.Include(x => x.Items)
@@ -19,11 +20,24 @@ namespace NetApiRestore.Controllers
 
 			if (basket == null) return NoContent();
 
-			return basket;
+			return new BasketDto
+			{
+				BasketId = basket.BasketId,
+				Items = basket.Items.Select(x => new BasketItemDto
+				{
+					ProductId = x.ProductId,
+					Name = x.Product.Name,
+					Price = x.Product.Price,
+					Brand = x.Product.Brand,
+					Type = x.Product.Type,
+					PictureUrl = x.Product.PictureUrl,
+					Quantity = x.Quantity,
+				}).ToList()
+			};
 		}
 
 		[HttpPost]
-		public async Task<ActionResult> AddItemToBasket(int productId, int quantity)
+		public async Task<ActionResult<BasketDto>> AddItemToBasket(int productId, int quantity)
 		{
 			// get bakset 
 			var basket = await RetrieveBasket();
@@ -41,9 +55,27 @@ namespace NetApiRestore.Controllers
 			// save changes
 			var result = await context.SaveChangesAsync() > 0;
 
-			if (result) return CreatedAtAction(nameof(GetBasket), basket);
+			if (result) return CreatedAtAction(nameof(GetBasket), MapBasketToDto(basket));
 
 			return BadRequest("Problem updating basket");
+		}
+
+		private BasketDto MapBasketToDto(Basket basket)
+		{
+			return new BasketDto
+			{
+				BasketId = basket.BasketId,
+				Items = basket.Items.Select(x => new BasketItemDto
+				{
+					ProductId = x.ProductId,
+					Name = x.Product.Name,
+					Price = x.Product.Price,
+					Brand = x.Product.Brand,
+					Type = x.Product.Type,
+					PictureUrl = x.Product.PictureUrl,
+					Quantity = x.Quantity,
+				}).ToList()
+			};
 		}
 
 		//[HttpDelete]
