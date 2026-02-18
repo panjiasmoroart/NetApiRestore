@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NetApiRestore.Data;
 using NetApiRestore.DTOs;
 using NetApiRestore.Entities;
+using NetApiRestore.Extensions;
 
 namespace NetApiRestore.Controllers
 {
@@ -20,20 +21,7 @@ namespace NetApiRestore.Controllers
 
 			if (basket == null) return NoContent();
 
-			return new BasketDto
-			{
-				BasketId = basket.BasketId,
-				Items = basket.Items.Select(x => new BasketItemDto
-				{
-					ProductId = x.ProductId,
-					Name = x.Product.Name,
-					Price = x.Product.Price,
-					Brand = x.Product.Brand,
-					Type = x.Product.Type,
-					PictureUrl = x.Product.PictureUrl,
-					Quantity = x.Quantity,
-				}).ToList()
-			};
+			return basket.ToDto();
 		}
 
 		[HttpPost]
@@ -55,7 +43,7 @@ namespace NetApiRestore.Controllers
 			// save changes
 			var result = await context.SaveChangesAsync() > 0;
 
-			if (result) return CreatedAtAction(nameof(GetBasket), MapBasketToDto(basket));
+			if (result) return CreatedAtAction(nameof(GetBasket), basket.ToDto());
 
 			return BadRequest("Problem updating basket");
 		}
@@ -78,11 +66,17 @@ namespace NetApiRestore.Controllers
 			};
 		}
 
-		//[HttpDelete]
-		//public async Task<ActionResult> RemoveBasketItem(int productId, int quantity)
-		//{
-		//	return BadRequest("Problem updating basket");
-		//}
+		[HttpDelete]
+		public async Task<ActionResult> RemoveBasketItem(int productId, int quantity)
+		{
+			// get basket 
+
+			// remove the item or reduce its quantity 
+
+			// save changes
+
+			return Ok();
+		}
 
 		private Basket CreateBasket()
 		{
