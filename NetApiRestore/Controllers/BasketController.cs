@@ -70,12 +70,19 @@ namespace NetApiRestore.Controllers
 		public async Task<ActionResult> RemoveBasketItem(int productId, int quantity)
 		{
 			// get basket 
+			var basket = await RetrieveBasket();
+
+			if (basket == null) BadRequest("Unable to retrieve basket");
 
 			// remove the item or reduce its quantity 
+			basket.RemoveItem(productId, quantity);
 
 			// save changes
+			var result = await context.SaveChangesAsync() > 0;
 
-			return Ok();
+			if (result) return Ok();
+
+			return BadRequest("Problem updating basket");
 		}
 
 		private Basket CreateBasket()
