@@ -46,11 +46,11 @@ namespace NetApiRestore.Controllers
 			return BadRequest("Problem updating basket");
 		}
 
-		[HttpDelete]
-		public async Task<ActionResult> RemoveBasketItem(int productId, int quantity)
-		{
-			return BadRequest("Problem updating basket");
-		}
+		//[HttpDelete]
+		//public async Task<ActionResult> RemoveBasketItem(int productId, int quantity)
+		//{
+		//	return BadRequest("Problem updating basket");
+		//}
 
 		private Basket CreateBasket()
 		{
