@@ -4,13 +4,16 @@ using Microsoft.EntityFrameworkCore;
 using NetApiRestore.Data;
 using NetApiRestore.Entities;
 using NetApiRestore.Extensions;
+using NetApiRestore.RequestHelpers;
 
 namespace NetApiRestore.Controllers
 {
     public class ProductsController(StoreContext context) : BaseApiController
 	{
         [HttpGet]
-		public async Task<ActionResult<List<Product>>> GetProducts(string? orderBy, string? searchTerm)
+		public async Task<ActionResult<List<Product>>> GetProducts(
+			[FromQuery]ProductParams productParams	
+		)
 		{
 			//var query = context.Products.AsQueryable();
 
@@ -23,8 +26,9 @@ namespace NetApiRestore.Controllers
 
 			// custom with extensions
 			var query = context.Products
-				.Sort(orderBy)
-				.Search(searchTerm)
+				.Sort(productParams.OrderBy)
+				.Search(productParams.SearchTerm)
+				.Filter(productParams.Brands, productParams.Types)
 				.AsQueryable();
 
 			return await query.ToListAsync();
