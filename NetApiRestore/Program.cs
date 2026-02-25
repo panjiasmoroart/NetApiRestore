@@ -1,5 +1,7 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NetApiRestore.Data;
+using NetApiRestore.Entities;
 using NetApiRestore.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,12 @@ builder.Services.AddDbContext<StoreContext>(opt =>
 });
 builder.Services.AddCors();
 builder.Services.AddTransient<ExceptionMiddleware>();
+builder.Services.AddIdentityApiEndpoints<User>(opt =>
+{
+	opt.User.RequireUniqueEmail = true;
+})
+	.AddRoles<IdentityRole>()
+	.AddEntityFrameworkStores<StoreContext>();
 
 var app = builder.Build();
 
@@ -27,9 +35,11 @@ app.UseCors(opt =>
 
 //app.UseHttpsRedirection();
 
-//app.UseAuthorization();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
+app.MapGroup("api").MapIdentityApi<User>(); // api/login
 
 // seed the database
 DbInitializer.InitDb(app);
