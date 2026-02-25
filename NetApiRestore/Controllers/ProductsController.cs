@@ -56,6 +56,7 @@ namespace NetApiRestore.Controllers
             return product;
 		}
 
+		// https://localhost:5001/api/products/filters
 		[HttpGet("filters")]
 		public async Task<IActionResult> GetFilters()
 		{
