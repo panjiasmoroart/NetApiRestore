@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using NetApiRestore.DTOs;
 using NetApiRestore.Entities;
 
@@ -57,5 +59,41 @@ namespace NetApiRestore.Controllers
 			return NoContent();
 		}
 
+		[Authorize]
+		[HttpPost("address")]
+		public async Task<ActionResult<Address>> CreateOrUpdateAddress(Address address)
+		{
+			var user = await signInManager.UserManager.Users
+				.Include(x => x.Address)
+				// Ambil user yang UserName-nya sama dengan username yang sedang login
+				.FirstOrDefaultAsync(x => x.UserName == User.Identity!.Name); 
+			
+			if (user == null) return Unauthorized();
+
+			user.Address = address;
+
+			var result = await signInManager.UserManager.UpdateAsync(user);
+
+			if (!result.Succeeded) return BadRequest("Problem updating user address");
+
+			return Ok(user.Address);
+		}
+
+		[Authorize]
+		[HttpGet("address")]
+		public async Task<ActionResult<Address>> GetSavedAddress()
+		{
+			var address = await signInManager.UserManager.Users
+				.Where(x => x.UserName == User.Identity!.Name)
+				.Select(x => x.Address)
+				.FirstOrDefaultAsync();
+
+			if (address == null) return NoContent();
+
+			return address;
+		}
+
 	}
 }
+
+
