@@ -83,6 +83,7 @@ namespace NetApiRestore.Controllers
 		[HttpGet("address")]
 		public async Task<ActionResult<Address>> GetSavedAddress()
 		{
+			// LINQ Method Syntax
 			var address = await signInManager.UserManager.Users
 				.Where(x => x.UserName == User.Identity!.Name)
 				.Select(x => x.Address)
@@ -91,6 +92,22 @@ namespace NetApiRestore.Controllers
 			if (address == null) return NoContent();
 
 			return address;
+
+			// LINQ Query Syntax
+			/*
+			var userData = await (
+				from a in signInManager.UserManager.Users
+				join r in db.TblRoles on a.RoleID equals r.RoleID
+				where a.UserName == User.Identity!.Name
+				select new
+				{
+					a.FullName,
+					a.UserName,
+					a.Address,
+					RoleName = r.RoleName
+				}
+			).FirstOrDefaultAsync();
+			*/
 		}
 
 	}
