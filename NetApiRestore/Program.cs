@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NetApiRestore.Data;
 using NetApiRestore.Entities;
 using NetApiRestore.Middleware;
+using NetApiRestore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -16,6 +17,7 @@ builder.Services.AddDbContext<StoreContext>(opt =>
 });
 builder.Services.AddCors();
 builder.Services.AddTransient<ExceptionMiddleware>();
+builder.Services.AddScoped<PaymentsService>();
 builder.Services.AddIdentityApiEndpoints<User>(opt =>
 {
 	opt.User.RequireUniqueEmail = true;
