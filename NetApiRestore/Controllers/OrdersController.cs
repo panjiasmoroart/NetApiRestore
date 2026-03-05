@@ -14,10 +14,10 @@ namespace NetApiRestore.Controllers
 	public class OrdersController(StoreContext context) : BaseApiController
 	{
 		[HttpGet]
-		public async Task<ActionResult<List<Order>>> GetOrders()
+		public async Task<ActionResult<List<OrderDto>>> GetOrders()
 		{
 			var orders = await context.Orders
-				.Include(x => x.OrderItems)
+				.ProjectToDto()
 				.Where(x => x.BuyerEmail == User.GetUsername())
 				.ToListAsync();
 
@@ -25,9 +25,10 @@ namespace NetApiRestore.Controllers
 		}
 
 		[HttpGet("{id:int}")]
-		public async Task<ActionResult<Order>> GetOrderDetails(int id)
+		public async Task<ActionResult<OrderDto>> GetOrderDetails(int id)
 		{
 			var order = await context.Orders
+				.ProjectToDto()
 				.Where(x => x.BuyerEmail == User.GetUsername() && id == x.Id)
 				.FirstOrDefaultAsync();
 
@@ -71,7 +72,7 @@ namespace NetApiRestore.Controllers
 			var result = await context.SaveChangesAsync() > 0;
 			if (!result) return BadRequest("Problem creating order");
 
-			return CreatedAtAction(nameof(GetOrderDetails), new { id = order.Id }, order);
+			return CreatedAtAction(nameof(GetOrderDetails), new { id = order.Id }, order.ToDto());
 		}
 
 		private long CalculateDeliveryFee(long subtotal)
