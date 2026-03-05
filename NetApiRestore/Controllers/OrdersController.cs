@@ -81,7 +81,30 @@ namespace NetApiRestore.Controllers
 
 		private List<OrderItem>? CreateOrderItems(List<BasketItem> items)
 		{
-			throw new NotImplementedException();
+			var orderItems = new List<OrderItem>();
+
+			foreach (var item in items)
+			{
+				if (item.Product.QuantityInStock < item.Quantity)
+					return null;
+
+				var orderItem = new OrderItem
+				{
+					ItemOrdered = new ProductItemOrdered
+					{
+						ProductId = item.ProductId,
+						PictureUrl = item.Product.PictureUrl,
+						Name = item.Product.Name
+					},
+					Price = item.Product.Price,
+					Quantity = item.Quantity
+				};
+				orderItems.Add(orderItem);
+
+				item.Product.QuantityInStock -= item.Quantity;
+			}
+
+			return orderItems;
 		}
 
 	}
