@@ -52,24 +52,37 @@ namespace NetApiRestore.Controllers
 			var deliveryFee = CalculateDeliveryFee(subtotal);
 			long discount = 0;
 
-			var order = new Order
+			var order = await context.Orders
+				.Include(x => x.OrderItems)
+				.FirstOrDefaultAsync(x => x.PaymentIntentId == basket.PaymentIntentId);
+
+			if (order == null)
 			{
-				OrderItems = items,
-				BuyerEmail = User.GetUsername(),
-				ShippingAddress = orderDto.ShippingAddress,
-				DeliveryFee = deliveryFee,
-				Subtotal = subtotal,
-				Discount = discount,
-				PaymentSummary = orderDto.PaymentSummary,
-				PaymentIntentId = basket.PaymentIntentId
-			};
+				order = new Order
+				{
+					OrderItems = items,
+					BuyerEmail = User.GetUsername(),
+					ShippingAddress = orderDto.ShippingAddress,
+					DeliveryFee = deliveryFee,
+					Subtotal = subtotal,
+					Discount = discount,
+					PaymentSummary = orderDto.PaymentSummary,
+					PaymentIntentId = basket.PaymentIntentId
+				};
 
-			context.Orders.Add(order);
+				context.Orders.Add(order);
+			}
+			else
+			{
+				order.OrderItems = items;
+			}
 
-			context.Baskets.Remove(basket);
-			Response.Cookies.Delete("basketId");
+			// remove from function HandlePaymentIntentSucceeded
+			// context.Baskets.Remove(basket);
+			// Response.Cookies.Delete("basketId");
 
 			var result = await context.SaveChangesAsync() > 0;
+
 			if (!result) return BadRequest("Problem creating order");
 
 			return CreatedAtAction(nameof(GetOrderDetails), new { id = order.Id }, order.ToDto());
