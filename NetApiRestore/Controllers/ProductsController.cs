@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetApiRestore.Data;
+using NetApiRestore.DTOs;
 using NetApiRestore.Entities;
 using NetApiRestore.Extensions;
 using NetApiRestore.RequestHelpers;
@@ -64,6 +65,20 @@ namespace NetApiRestore.Controllers
 			var types = await context.Products.Select(x => x.Type).Distinct().ToListAsync();
 
 			return Ok(new { brands, types });
+		}
+
+		[HttpPost]
+		public async Task<ActionResult<Product>> CreateProduct(CreateProductDto productDto)
+		{
+			var product = new Product{ Name = productDto.Name };
+
+			context.Products.Add(product);
+
+			var result = await context.SaveChangesAsync() > 0;
+
+			if (result) return CreatedAtAction(nameof(GetProduct), new { Id = product.Id }, product);
+
+			return BadRequest("Problem creating new procuct");
 		}
 
 	}
