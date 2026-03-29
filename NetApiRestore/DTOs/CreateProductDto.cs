@@ -16,7 +16,10 @@ namespace NetApiRestore.DTOs
 		public long Price { get; set; }
 
 		[Required]
-		public IFormFile File { get; set; } = null!;
+		public string PictureUrl { get; set; } = string.Empty;
+
+		//[Required]
+		//public IFormFile File { get; set; } = null!;
 
 		[Required]
 		public required string Type { get; set; }

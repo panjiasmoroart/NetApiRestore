@@ -1,4 +1,6 @@
 ﻿//using Microsoft.AspNetCore.Http;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetApiRestore.Data;
@@ -9,7 +11,7 @@ using NetApiRestore.RequestHelpers;
 
 namespace NetApiRestore.Controllers
 {
-    public class ProductsController(StoreContext context) : BaseApiController
+    public class ProductsController(StoreContext context, IMapper mapper) : BaseApiController
 	{
         [HttpGet]
 		public async Task<ActionResult<List<Product>>> GetProducts(
@@ -67,10 +69,18 @@ namespace NetApiRestore.Controllers
 			return Ok(new { brands, types });
 		}
 
+		[Authorize(Roles = "Admin")]
 		[HttpPost]
 		public async Task<ActionResult<Product>> CreateProduct(CreateProductDto productDto)
 		{
-			var product = new Product{ Name = productDto.Name };
+			Console.WriteLine("Insert Product");
+			var product = mapper.Map<Product>(productDto);
+
+			// jika ada gambar yg diupload
+			//if (productDto.File != null)
+			//{
+				
+			//}
 
 			context.Products.Add(product);
 
