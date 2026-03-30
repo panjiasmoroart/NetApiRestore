@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NetApiRestore.Data;
 using NetApiRestore.Entities;
 using NetApiRestore.Middleware;
+using NetApiRestore.RequestHelpers;
 using NetApiRestore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 var mysqlServerVersion = new MySqlServerVersion(new Version(8, 0, 44)); // Fixed
 
 // Add services to the container.
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
 builder.Services.AddControllers();
 builder.Services.AddDbContext<StoreContext>(opt =>
 {
