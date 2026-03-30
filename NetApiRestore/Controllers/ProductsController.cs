@@ -91,5 +91,25 @@ namespace NetApiRestore.Controllers
 			return BadRequest("Problem creating new procuct");
 		}
 
+		[Authorize(Roles = "Admin")]
+		[HttpPut]
+		public async Task<ActionResult> UpdateProduct(UpdateProductDto updateProductDto)
+		{
+			var product = await context.Products.FindAsync(updateProductDto.Id);
+
+			if (product == null) return NotFound();
+
+			mapper.Map(updateProductDto, product);
+
+			var result = await context.SaveChangesAsync() > 0;
+
+			if (result) return NoContent();
+
+			return BadRequest("Problem updating product");
+		}
+
+
+		
+
 	}
 }

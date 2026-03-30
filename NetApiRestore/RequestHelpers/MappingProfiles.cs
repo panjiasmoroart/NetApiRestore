@@ -9,6 +9,7 @@ namespace NetApiRestore.RequestHelpers
 		public MappingProfiles()
 		{
 			CreateMap<CreateProductDto, Product>();
+			CreateMap<UpdateProductDto, Product>();
 		}
 	}
 }
