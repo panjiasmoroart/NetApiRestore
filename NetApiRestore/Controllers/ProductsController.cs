@@ -8,10 +8,11 @@ using NetApiRestore.DTOs;
 using NetApiRestore.Entities;
 using NetApiRestore.Extensions;
 using NetApiRestore.RequestHelpers;
+using NetApiRestore.Services;
 
 namespace NetApiRestore.Controllers
 {
-    public class ProductsController(StoreContext context, IMapper mapper) : BaseApiController
+    public class ProductsController(StoreContext context, IMapper mapper, ImageService imageService) : BaseApiController
 	{
         [HttpGet]
 		public async Task<ActionResult<List<Product>>> GetProducts(
@@ -77,10 +78,17 @@ namespace NetApiRestore.Controllers
 			var product = mapper.Map<Product>(productDto);
 
 			// jika ada gambar yg diupload
-			//if (productDto.File != null)
-			//{
-				
-			//}
+			if (productDto.File != null)
+			{
+				var imageResult = await imageService.AddImageAsync(productDto.File);
+				if (imageResult.Error != null)
+				{
+					return BadRequest(imageResult.Error.Message);
+				}
+
+				product.PictureUrl = imageResult.SecureUrl.AbsoluteUri;
+				product.PublicId = imageResult.PublicId;
+			}
 
 			context.Products.Add(product);
 
