@@ -16,10 +16,11 @@ namespace NetApiRestore.DTOs
 		[Range(100, double.PositiveInfinity)]
 		public long Price { get; set; }
 
+		// tanpa cloudinary 
+		//[Required]
+		//public string PictureUrl { get; set; } = string.Empty;
 		[Required]
-		public string PictureUrl { get; set; } = string.Empty;
-
-		//public IFormFile? File { get; set; }
+		public IFormFile? File { get; set; }
 
 		[Required]
 		public required string Type { get; set; }

@@ -109,6 +109,20 @@ namespace NetApiRestore.Controllers
 
 			mapper.Map(updateProductDto, product);
 
+			if (updateProductDto.File != null)
+			{
+				var imageResult = await imageService.AddImageAsync(updateProductDto.File);
+
+				if (imageResult.Error != null)
+					return BadRequest(imageResult.Error.Message);
+
+				if (!string.IsNullOrEmpty(product.PublicId))
+					await imageService.DeleteImageAsync(product.PublicId);
+
+				product.PictureUrl = imageResult.SecureUrl.AbsoluteUri;
+				product.PublicId = imageResult.PublicId;
+			}
+
 			var result = await context.SaveChangesAsync() > 0;
 
 			if (result) return NoContent();
@@ -123,6 +137,9 @@ namespace NetApiRestore.Controllers
 			var product = await context.Products.FindAsync(id);
 
 			if (product == null) return NotFound();
+
+			if (!string.IsNullOrEmpty(product.PublicId))
+				await imageService.DeleteImageAsync(product.PublicId);
 
 			context.Products.Remove(product);
 
