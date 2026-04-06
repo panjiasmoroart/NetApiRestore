@@ -19,7 +19,8 @@ namespace NetApiRestore.DTOs
 		// tanpa cloudinary 
 		//[Required]
 		//public string PictureUrl { get; set; } = string.Empty;
-		[Required]
+		//[Required]
+		//?boleh null (tidak upload file)
 		public IFormFile? File { get; set; }
 
 		[Required]

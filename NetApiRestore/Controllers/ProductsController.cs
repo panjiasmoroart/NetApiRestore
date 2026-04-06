@@ -72,7 +72,7 @@ namespace NetApiRestore.Controllers
 
 		[Authorize(Roles = "Admin")]
 		[HttpPost]
-		public async Task<ActionResult<Product>> CreateProduct(CreateProductDto productDto)
+		public async Task<ActionResult<Product>> CreateProduct([FromForm]  CreateProductDto productDto)
 		{
 			Console.WriteLine("Insert Product");
 			var product = mapper.Map<Product>(productDto);
@@ -101,7 +101,7 @@ namespace NetApiRestore.Controllers
 
 		[Authorize(Roles = "Admin")]
 		[HttpPut]
-		public async Task<ActionResult> UpdateProduct(UpdateProductDto updateProductDto)
+		public async Task<ActionResult> UpdateProduct([FromForm]  UpdateProductDto updateProductDto)
 		{
 			var product = await context.Products.FindAsync(updateProductDto.Id);
 
@@ -123,11 +123,14 @@ namespace NetApiRestore.Controllers
 				product.PublicId = imageResult.PublicId;
 			}
 
-			var result = await context.SaveChangesAsync() > 0;
+			//var result = await context.SaveChangesAsync() > 0;
 
-			if (result) return NoContent();
+			//if (result) return NoContent();
 
-			return BadRequest("Problem updating product");
+			//return BadRequest("Problem updating product");
+			await context.SaveChangesAsync();
+
+			return NoContent();
 		}
 
 		[Authorize(Roles = "Admin")]
