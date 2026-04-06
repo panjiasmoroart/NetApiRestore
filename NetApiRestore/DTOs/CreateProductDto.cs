@@ -18,7 +18,7 @@ namespace NetApiRestore.DTOs
 		//[Required]
 		//public string PictureUrl { get; set; } = string.Empty;
 
-		//[Required]
+		[Required]
 		public IFormFile File { get; set; } = null!;
 
 		[Required]
