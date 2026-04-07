@@ -33,6 +33,7 @@ namespace NetApiRestore.Extensions
 			return await query
 				.Include(x => x.Items)
 				.ThenInclude(x => x.Product)
+				.Include(x => x.Coupon)
 				.FirstOrDefaultAsync(x => x.BasketId == basketId)
 					?? throw new Exception("Cannot get basket");
 		}
