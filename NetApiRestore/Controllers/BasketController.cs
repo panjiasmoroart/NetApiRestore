@@ -119,13 +119,15 @@ namespace NetApiRestore.Controllers
 		{
 			// get the basket
 			var basket = await RetrieveBasket();
-			if (basket == null || basket.Coupon == null || string.IsNullOrEmpty(basket.ClientSecret))
-				return BadRequest("Unable to update basket with coupon");
+			//if (basket == null || basket.Coupon == null || string.IsNullOrEmpty(basket.ClientSecret))
+			if (basket == null || string.IsNullOrEmpty(basket.ClientSecret))
+					return BadRequest("Unable to update basket with coupon");
 
 			var intent = await paymentsService.CreateOrUpdatePaymentIntent(basket, true);
 			if (intent == null) return BadRequest("Problem removing coupon from basket");
 
 			basket.Coupon = null;
+			basket.CouponId = null;
 
 			var result = await context.SaveChangesAsync() > 0;
 

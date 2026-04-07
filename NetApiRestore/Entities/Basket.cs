@@ -10,8 +10,8 @@
 
 		public string? PaymentIntentId { get; set; }
 
-		//// Foreign Key
-		//public string? CouponId { get; set; }
+		// Foreign Key
+		public int? CouponId { get; set; }
 		// Navigation Property
 		public AppCoupon? Coupon { get; set; }
 

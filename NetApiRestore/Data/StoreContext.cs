@@ -21,6 +21,12 @@ namespace NetApiRestore.Data
 					new IdentityRole { Id = "1abc9de4-45e1-4900-9f79-be8db3f90e3c", Name = "Member", NormalizedName = "MEMBER" },
 					new IdentityRole { Id = "1314c3e5-eff9-45ad-9cfd-f4ba7ed656b9", Name = "Admin", NormalizedName = "ADMIN" }
 				);
+
+			builder.Entity<Basket>()
+				.HasOne(b => b.Coupon)
+				.WithMany()
+				.HasForeignKey(b => b.CouponId)
+				.OnDelete(DeleteBehavior.SetNull);
 		}
 	}
 }
