@@ -22,6 +22,8 @@ builder.Services.AddCors();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddTransient<ExceptionMiddleware>();
 builder.Services.AddScoped<PaymentsService>();
+// other services omitted
+builder.Services.AddScoped<DiscountService>();
 builder.Services.AddScoped<ImageService>();
 builder.Services.AddIdentityApiEndpoints<User>(opt =>
 {

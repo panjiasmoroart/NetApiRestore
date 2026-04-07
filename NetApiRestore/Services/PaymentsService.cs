@@ -3,9 +3,9 @@ using Stripe;
 
 namespace NetApiRestore.Services
 {
-	public class PaymentsService(IConfiguration config)
+	public class PaymentsService(IConfiguration config, DiscountService discountService)
 	{
-		public async Task<PaymentIntent> CreateOrUpdatePaymentIntent(Basket basket)
+		public async Task<PaymentIntent> CreateOrUpdatePaymentIntent(Basket basket, bool removeDiscount = false)
 		{
 			StripeConfiguration.ApiKey = config["StripeSettings:SecretKey"];
 
@@ -17,11 +17,17 @@ namespace NetApiRestore.Services
 
 			long deliveryFee = subtotal > 10000 ? 0 : 500;
 
-			// long discount = 0;
+			long discount = 0;
 
+
+			if (basket.Coupon != null)
+			{
+				discount = await discountService.CalculateDiscountFromAmount(basket.Coupon, subtotal, removeDiscount);
+			}
+
+			//var totalAmount = subtotal  + deliveryFee;
 			// logic discount
-
-			var totalAmount = subtotal  + deliveryFee;
+			var totalAmount = subtotal - discount + deliveryFee;
 
 			if (string.IsNullOrEmpty(basket.PaymentIntentId))
 			{

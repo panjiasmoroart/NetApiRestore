@@ -1,4 +1,6 @@
-﻿namespace NetApiRestore.DTOs
+﻿using NetApiRestore.Entities;
+
+namespace NetApiRestore.DTOs
 {
 	public class BasketDto
 	{
@@ -7,6 +9,8 @@
 
 		public string? ClientSecret { get; set; }
 
-		public string? PaymentItentId { get; set; }
+		//public string? PaymentItentId { get; set; }
+
+		public AppCoupon? Coupon { get; set; }
 	}
 }

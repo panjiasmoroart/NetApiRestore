@@ -13,7 +13,8 @@ namespace NetApiRestore.Extensions
 			{
 				BasketId = basket.BasketId,
 				ClientSecret = basket.ClientSecret,
-				PaymentItentId = basket.PaymentIntentId,
+				//PaymentItentId = basket.PaymentIntentId,
+				Coupon = basket.Coupon,
 				Items = basket.Items.Select(x => new BasketItemDto
 				{
 					ProductId = x.ProductId,

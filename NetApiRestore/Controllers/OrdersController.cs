@@ -7,11 +7,12 @@ using NetApiRestore.DTOs;
 using NetApiRestore.Entities;
 using NetApiRestore.Entities.OrderAggregate;
 using NetApiRestore.Extensions;
+using NetApiRestore.Services;
 
 namespace NetApiRestore.Controllers
 {
 	[Authorize]
-	public class OrdersController(StoreContext context) : BaseApiController
+	public class OrdersController(StoreContext context, DiscountService discountService) : BaseApiController
 	{
 		[HttpGet]
 		public async Task<ActionResult<List<OrderDto>>> GetOrders()
@@ -51,6 +52,11 @@ namespace NetApiRestore.Controllers
 			var subtotal = items.Sum(x => x.Price * x.Quantity);
 			var deliveryFee = CalculateDeliveryFee(subtotal);
 			long discount = 0;
+
+			if (basket.Coupon != null)
+			{
+				discount = await discountService.CalculateDiscountFromAmount(basket.Coupon, subtotal);
+			}
 
 			var order = await context.Orders
 				.Include(x => x.OrderItems)
